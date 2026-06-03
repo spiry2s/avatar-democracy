@@ -73,3 +73,13 @@ MULTI_MODEL_CHECK = os.environ.get("MULTI_MODEL_CHECK", "1") not in ("0", "false
 # inconsistent with that delegate's OWN recorded positions — a sign the delegate has
 # drifted, been captured, or been impersonated. Only runs for grounded delegates.
 DELEGATE_DRIFT_CHECK = os.environ.get("DELEGATE_DRIFT_CHECK", "1") not in ("0", "false", "False", "")
+
+# Emergency fast-track (Weimar Art. 48 caution — emergency powers must be HARD to
+# invoke): a time-sensitive bill skips the normal cooling-off, but must clear a higher
+# endorsement bar (base x multiplier) and is flagged for mandatory post-hoc review.
+EMERGENCY_THRESHOLD_MULTIPLIER = _int_env("EMERGENCY_THRESHOLD_MULTIPLIER", 2)
+EMERGENCY_COOLING_OFF_SECONDS = _int_env("EMERGENCY_COOLING_OFF_SECONDS", 3600)
+
+# Cross-bill conflict: when a bill freezes, check it against already-passed bills and
+# flag contradictions/repeals/duplications for the citizen.
+CROSS_BILL_CONFLICT_CHECK = os.environ.get("CROSS_BILL_CONFLICT_CHECK", "1") not in ("0", "false", "False", "")

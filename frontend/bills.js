@@ -52,7 +52,12 @@ proposeBtn.addEventListener('click', async () => {
     const res = await fetch('/api/bills', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title: proposeTitle.value.trim(), text: proposeText.value.trim(), scope: proposeScope.value }),
+      body: JSON.stringify({
+        title: proposeTitle.value.trim(),
+        text: proposeText.value.trim(),
+        scope: proposeScope.value,
+        emergency: document.getElementById('propose-emergency').checked,
+      }),
     });
     if (!res.ok) throw new Error((await res.json()).detail || 'Propose failed');
     proposeTitle.value = '';
@@ -90,11 +95,13 @@ function renderList(bills) {
     return `<div class="bill-card" data-id="${escHtml(b.id)}">
       <div class="bill-card-main">
         <span class="state-badge state-${b.state}">${STATE_LABELS[b.state] || b.state}</span>
+        ${b.emergency ? '<span class="badge-emergency">⚡ Emergency</span>' : ''}
         <span class="bill-card-title">${escHtml(b.title)}</span>
         <span class="muted bill-card-scope">${escHtml(b.scope)}</span>
       </div>
       ${progress}
       ${resultLine(b)}
+      ${b.conflicts && b.conflicts.length ? `<p class="conflict-line">⚠ conflicts with ${b.conflicts.length} passed bill(s)</p>` : ''}
     </div>`;
   }).join('');
   billsList.querySelectorAll('.bill-card').forEach(card =>
@@ -139,10 +146,20 @@ async function openDetail(billId) {
 
 function renderDetail(b) {
   document.getElementById('detail-eyebrow').innerHTML =
-    `<span class="state-badge state-${b.state}">${STATE_LABELS[b.state] || b.state}</span> · ${escHtml(b.scope)}`;
+    `<span class="state-badge state-${b.state}">${STATE_LABELS[b.state] || b.state}</span> · ${escHtml(b.scope)}`
+    + (b.emergency ? ' · <span class="badge-emergency">⚡ Emergency</span>' : '');
   document.getElementById('detail-title').textContent = b.title;
 
   let html = '';
+
+  // Emergency + conflict banners (shown at every stage)
+  if (b.emergency) {
+    html += `<div class="banner emergency-banner"><span><strong>⚡ Emergency fast-track.</strong> This bill skips the normal cooling-off period and required a higher endorsement bar to invoke. It is flagged for mandatory post-hoc review.</span></div>`;
+  }
+  if (b.conflicts && b.conflicts.length) {
+    html += `<div class="banner conflict-banner"><span><strong>⚠ Conflicts with already-passed legislation:</strong>
+      <ul>${b.conflicts.map(c => `<li><strong>${escHtml(c.title || c.bill_id)}</strong> — ${escHtml(c.conflict)}</li>`).join('')}</ul></span></div>`;
+  }
 
   // Stage-specific controls
   if (b.state === 'draft') html += draftPanel(b);

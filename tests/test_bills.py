@@ -194,3 +194,42 @@ def test_compute_result_empty():
     r = bills.compute_result([], 0.5)
     assert r["passed"] is False
     assert r["sections_total"] == 0
+
+
+# ── emergency fast-track ─────────────────────────────────────────────────────
+
+
+def test_emergency_raises_endorsement_threshold():
+    base = config.ENDORSEMENT_THRESHOLDS["ordinary"]
+    normal = bills.propose("T", "text", "ordinary", emergency=False)
+    emerg = bills.propose("T", "text", "ordinary", emergency=True)
+    assert normal.endorsement_threshold == base
+    assert emerg.endorsement_threshold == base * config.EMERGENCY_THRESHOLD_MULTIPLIER
+    assert emerg.emergency is True
+
+
+def test_emergency_shortens_cooling_off(monkeypatch):
+    monkeypatch.setattr(config, "BILL_COOLING_OFF_SECONDS", 1000)
+    monkeypatch.setattr(config, "EMERGENCY_COOLING_OFF_SECONDS", 10)
+
+    e = bills.propose("T", "text", "ordinary", emergency=True)
+    bills.open_for_endorsement(e)
+    e.simulated_endorsements = e.endorsement_threshold
+    t0 = time.time()
+    bills.freeze_if_threshold_met(e)
+    assert e.cooling_off_until - t0 <= 60          # short emergency window
+
+    n = bills.propose("T", "text", "ordinary", emergency=False)
+    bills.open_for_endorsement(n)
+    n.simulated_endorsements = n.endorsement_threshold
+    t1 = time.time()
+    bills.freeze_if_threshold_met(n)
+    assert n.cooling_off_until - t1 > 100          # long normal window
+
+
+def test_emergency_survives_serialization():
+    e = bills.propose("T", "text", "ordinary", emergency=True)
+    e.conflicts = [{"bill_id": "bill-x", "title": "Old Act", "conflict": "repeals it"}]
+    restored = bills.Bill.from_dict(e.to_dict())
+    assert restored.emergency is True
+    assert restored.conflicts[0]["bill_id"] == "bill-x"

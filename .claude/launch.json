@@ -8,7 +8,8 @@
       "port": 8000,
       "env": {
         "BILL_COOLING_OFF_SECONDS": "0",
-        "DELEGATE_COOLING_OFF_SECONDS": "0"
+        "DELEGATE_COOLING_OFF_SECONDS": "0",
+        "EMERGENCY_COOLING_OFF_SECONDS": "0"
       }
     }
   ]

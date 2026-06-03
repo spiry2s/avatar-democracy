@@ -18,6 +18,7 @@ const LABELS = {
   bill_voted: { icon: '🗳', text: 'Bill voted' },
   bill_passed: { icon: '✓', text: 'Bill passed' },
   bill_failed: { icon: '✗', text: 'Bill failed' },
+  bill_conflict_flagged: { icon: '⚠', text: 'Cross-bill conflict flagged' },
   population_generated: { icon: '👥', text: 'Population generated' },
 };
 
@@ -71,7 +72,10 @@ function detail(e) {
     case 'profile_updated':
       return `<span class="muted">${d.values_len || 0} chars of values · compass set</span>`;
     case 'bill_proposed':
-      return `<strong>${escHtml(d.title || '')}</strong> <span class="muted">(${escHtml(d.scope || '')})</span>`;
+      return `<strong>${escHtml(d.title || '')}</strong> <span class="muted">(${escHtml(d.scope || '')})</span>`
+        + (d.emergency ? ' <span class="badge-emergency">⚡ Emergency</span>' : '');
+    case 'bill_conflict_flagged':
+      return `<span class="muted">conflicts with ${d.count || 0} passed bill(s)</span>`;
     case 'bill_opened':
       return `<strong>${escHtml(d.title || '')}</strong> — open for endorsement`;
     case 'bill_endorsed':

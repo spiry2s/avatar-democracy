@@ -58,6 +58,8 @@ class Bill:
     analysis: dict[str, Any] | None = None
     vote: dict[str, Any] | None = None
     result: dict[str, Any] | None = None
+    emergency: bool = False
+    conflicts: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         d = {
@@ -78,6 +80,8 @@ class Bill:
             "analysis": self.analysis,
             "vote": self.vote,
             "result": self.result,
+            "emergency": self.emergency,
+            "conflicts": self.conflicts,
         }
         # Derived, convenient for the UI:
         d["total_endorsements"] = total_endorsements(self)
@@ -105,16 +109,22 @@ class Bill:
             analysis=data.get("analysis"),
             vote=data.get("vote"),
             result=data.get("result"),
+            emergency=data.get("emergency", False),
+            conflicts=data.get("conflicts", []),
         )
 
 
 # ── pure transitions ─────────────────────────────────────────────────────────
 
 
-def propose(title: str, text: str, scope: str = "ordinary", sponsor: str = "local") -> Bill:
+def propose(title: str, text: str, scope: str = "ordinary", sponsor: str = "local",
+            emergency: bool = False) -> Bill:
     if not text or not text.strip():
         raise ValueError("Bill text is required")
     scope = scope if scope in VALID_SCOPES else "ordinary"
+    base = config.ENDORSEMENT_THRESHOLDS.get(scope, 25)
+    # Emergency fast-track must clear a HIGHER bar to invoke.
+    threshold = base * config.EMERGENCY_THRESHOLD_MULTIPLIER if emergency else base
     now = time.time()
     return Bill(
         id="bill-" + uuid.uuid4().hex[:8],
@@ -128,7 +138,8 @@ def propose(title: str, text: str, scope: str = "ordinary", sponsor: str = "loca
         current_version=1,
         endorsements=[],
         simulated_endorsements=0,
-        endorsement_threshold=config.ENDORSEMENT_THRESHOLDS.get(scope, 25),
+        endorsement_threshold=int(threshold),
+        emergency=emergency,
     )
 
 
@@ -190,7 +201,8 @@ def freeze_if_threshold_met(bill: Bill) -> bool:
         return False
     bill.state = BillState.COOLING_OFF
     bill.frozen_version = bill.current_version
-    bill.cooling_off_until = time.time() + config.BILL_COOLING_OFF_SECONDS
+    cool = config.EMERGENCY_COOLING_OFF_SECONDS if bill.emergency else config.BILL_COOLING_OFF_SECONDS
+    bill.cooling_off_until = time.time() + cool
     bill.updated_at = time.time()
     return True
 

@@ -34,6 +34,7 @@ from backend import (
     bills as bills_mod,
     chamber,
     config,
+    conflict,
     extractors,
     population,
     profile as profile_mod,
@@ -393,6 +394,7 @@ class ProposeRequest(BaseModel):
     title: str
     text: str
     scope: str = "ordinary"
+    emergency: bool = False
 
 
 class VersionRequest(BaseModel):
@@ -429,9 +431,11 @@ async def get_bill(bill_id: str) -> JSONResponse:
 async def propose_bill(req: ProposeRequest) -> JSONResponse:
     if not req.text.strip():
         raise HTTPException(status_code=400, detail="Bill text is required")
-    bill = bills_mod.propose(req.title, req.text, req.scope)
+    bill = bills_mod.propose(req.title, req.text, req.scope, emergency=req.emergency)
     bills_mod.save_bill(bill)
-    audit.log_event("bill_proposed", {"id": bill.id, "title": bill.title, "scope": bill.scope})
+    audit.log_event("bill_proposed", {
+        "id": bill.id, "title": bill.title, "scope": bill.scope, "emergency": bill.emergency,
+    })
     return JSONResponse(content={"bill": bill.to_dict()})
 
 
@@ -468,12 +472,27 @@ def _freeze_and_analyze(bill: bills_mod.Bill) -> None:
     if bills_mod.freeze_if_threshold_met(bill):
         audit.log_event("bill_frozen", {
             "id": bill.id, "frozen_version": bill.frozen_version,
-            "cooling_off_until": bill.cooling_off_until,
+            "cooling_off_until": bill.cooling_off_until, "emergency": bill.emergency,
         })
         try:
             bill.analysis = summarizer.analyze_bill(bills_mod.frozen_text(bill)).to_dict()
         except Exception:
             bill.analysis = None  # analysis will be retried lazily at vote time
+
+        # Cross-bill conflict: compare against already-passed bills.
+        if config.CROSS_BILL_CONFLICT_CHECK and bill.analysis:
+            try:
+                passed = [
+                    {"id": b.id, "title": b.title,
+                     "summary": (b.analysis or {}).get("plain_summary", "") or b.title}
+                    for b in bills_mod.list_bills()
+                    if b.state == bills_mod.BillState.PASSED and b.id != bill.id
+                ]
+                bill.conflicts = conflict.detect_conflicts(bill.analysis, passed)
+                if bill.conflicts:
+                    audit.log_event("bill_conflict_flagged", {"id": bill.id, "count": len(bill.conflicts)})
+            except Exception:
+                bill.conflicts = []
 
 
 @app.post("/api/bills/{bill_id}/endorse")
