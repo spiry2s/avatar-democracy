@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>History — Avatar Democracy</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="logo">
+      <div class="logo-mark"></div>
+      <span>Avatar Democracy</span>
+    </div>
+    <nav>
+      <a href="/" class="nav-link">Analyze</a>
+      <a href="/avatar" class="nav-link">My Avatar</a>
+      <a href="/vote" class="nav-link">Vote</a>
+      <a href="/bills" class="nav-link">Bills</a>
+      <a href="/chamber" class="nav-link">Chamber</a>
+      <a href="/history" class="nav-link active">History</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="container">
+
+  <section class="hero">
+    <div class="eyebrow">Audit · Every action logged</div>
+    <h1>Your Avatar's history</h1>
+    <p class="lead">Auditability is a core promise: every configuration change, vote, and override is recorded here, newest first. Nothing your Avatar does is hidden from you.</p>
+  </section>
+
+  <section class="result-card">
+    <div class="result-card-header">
+      <h3>Audit log</h3>
+      <button class="btn-secondary" id="refresh-btn">Refresh</button>
+    </div>
+    <div class="result-card-body" id="audit-body">
+      <p class="muted">Loading…</p>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <span>Avatar Democracy · Open source · MIT licensed</span>
+    <span class="footer-version">v0.1 alpha</span>
+  </div>
+</footer>
+
+<script src="/static/history.js"></script>
+</body>
+</html>

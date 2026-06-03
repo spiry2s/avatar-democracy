@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vote — Avatar Democracy</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="logo">
+      <div class="logo-mark"></div>
+      <span>Avatar Democracy</span>
+    </div>
+    <nav>
+      <a href="/" class="nav-link">Analyze</a>
+      <a href="/avatar" class="nav-link">My Avatar</a>
+      <a href="/vote" class="nav-link active">Vote</a>
+      <a href="/bills" class="nav-link">Bills</a>
+      <a href="/chamber" class="nav-link">Chamber</a>
+      <a href="/history" class="nav-link">History</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="container">
+
+  <section class="hero">
+    <div class="eyebrow">Vote · Your Avatar acts</div>
+    <h1>Cast your vote on a bill</h1>
+    <p class="lead">Load a bill. Your Avatar reads it, casts a vote on each section based on your configuration, and shows you exactly why. Override anything you disagree with.</p>
+  </section>
+
+  <section class="banner hidden" id="no-profile-banner">
+    <span>You haven't set up your Avatar yet — it has nothing to vote with.</span>
+    <a href="/avatar" class="btn-secondary">Set up Avatar</a>
+  </section>
+
+  <section class="input-card">
+    <div class="tabs">
+      <button class="tab active" data-tab="upload">Upload PDF</button>
+      <button class="tab" data-tab="paste">Paste text</button>
+    </div>
+
+    <div class="tab-content active" id="tab-upload">
+      <div class="upload-zone" id="upload-zone">
+        <div class="upload-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+        </div>
+        <p class="upload-primary">Drop a PDF here, or click to select</p>
+        <p class="upload-secondary">Your Avatar will analyze then vote</p>
+        <input type="file" id="file-input" accept=".pdf" hidden>
+      </div>
+      <div class="file-info hidden" id="file-info">
+        <span id="file-name"></span>
+        <button class="btn-link" id="file-clear">Remove</button>
+      </div>
+    </div>
+
+    <div class="tab-content" id="tab-paste">
+      <textarea id="text-input" placeholder="Paste bill text here..." rows="10"></textarea>
+    </div>
+
+    <div class="input-footer">
+      <button class="btn-primary" id="vote-btn" disabled>Analyze &amp; vote</button>
+    </div>
+  </section>
+
+  <section class="status hidden" id="status">
+    <div class="status-spinner"></div>
+    <div class="status-text">
+      <div class="status-primary" id="status-primary">Working…</div>
+      <div class="status-secondary" id="status-secondary"></div>
+    </div>
+  </section>
+
+  <section class="error hidden" id="error">
+    <div class="error-icon">⚠</div>
+    <div class="error-text" id="error-text"></div>
+  </section>
+
+  <!-- Vote results -->
+  <section class="results hidden" id="results">
+    <div class="results-header">
+      <h2 id="results-title">Your Avatar's vote</h2>
+      <div class="tally" id="tally"></div>
+    </div>
+
+    <div class="result-card">
+      <div class="result-card-header"><h3>Recommendation</h3></div>
+      <div class="result-card-body">
+        <p id="recommendation"></p>
+        <div class="tension hidden" id="tension"></div>
+      </div>
+    </div>
+
+    <div class="result-card">
+      <div class="result-card-header">
+        <h3>Section-by-section</h3>
+        <span class="badge" id="sections-count"></span>
+      </div>
+      <div class="result-card-body" id="section-votes"></div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>Your Avatar approximates delegates from public positions — it can't consult them live.</strong> Every vote traces to your configuration and is logged. Override anything; your overrides are recorded too.
+    </div>
+  </section>
+
+</div>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <span>Avatar Democracy · Open source · MIT licensed</span>
+    <span class="footer-version">v0.1 alpha</span>
+  </div>
+</footer>
+
+<script src="/static/vote.js"></script>
+</body>
+</html>

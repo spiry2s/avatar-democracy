@@ -1,0 +1,79 @@
+A BILL
+
+To improve transparency in agricultural subsidy programs, and for other
+purposes.
+
+SECTION 1. SHORT TITLE.
+
+This Act may be cited as the "Family Farm Transparency and Modernization
+Act of 2025".
+
+SEC. 2. FINDINGS.
+
+Congress finds the following:
+(1) Family farms are the backbone of American agriculture.
+(2) Existing subsidy programs lack adequate transparency.
+(3) The Secretary of Agriculture should have flexibility to respond to
+emerging market conditions.
+
+SEC. 101. TRANSPARENCY REQUIREMENTS FOR FARM SUBSIDIES.
+
+(a) IN GENERAL.—Beginning January 1, 2026, the Secretary of Agriculture
+shall publish on a publicly accessible website the recipients of farm
+subsidy payments exceeding $250,000 annually.
+
+(b) EXEMPTIONS.—Subsection (a) shall not apply to:
+(1) Recipients organized as agricultural cooperatives under section 521
+of the Internal Revenue Code.
+(2) Recipients designated as "strategic agricultural partners" by the
+Secretary, in the Secretary's sole discretion.
+(3) Recipients receiving payments under emergency assistance programs.
+
+(c) SUNSET.—This section shall expire on December 31, 2028, unless
+reauthorized.
+
+SEC. 102. EXPANSION OF SECRETARY'S AUTHORITY.
+
+(a) The Secretary may, by regulation, modify, expand, or restructure any
+subsidy program established under this Act or any prior Act of Congress
+relating to agricultural support, as the Secretary determines to be in
+the public interest.
+
+(b) Such regulations shall be exempt from the requirements of section
+553 of title 5, United States Code (notice and comment rulemaking) for
+a period of three years following enactment.
+
+SEC. 201. APPROPRIATIONS.
+
+There is hereby appropriated to the Secretary of Agriculture, out of any
+funds in the Treasury not otherwise appropriated, $4,200,000,000 for
+fiscal year 2026 to carry out the provisions of this Act.
+
+Of the amounts appropriated under subsection (a):
+(1) $200,000,000 shall be available for transparency infrastructure;
+(2) $750,000,000 shall be available for the National Center for
+Advanced Agricultural Research, located in the district of the bill's
+primary sponsor; and
+(3) the remainder shall be available for subsidy payments and program
+administration.
+
+SEC. 202. AMENDMENT TO SECTION 1502 OF TITLE 7.
+
+Section 1502(c)(3) of title 7, United States Code, is amended by
+striking "shall not exceed 15 percent" and inserting "shall not exceed
+40 percent".
+
+SEC. 301. RETROACTIVE APPLICATION.
+
+The provisions of section 102 shall apply to all regulations issued
+under any agricultural support program enacted on or after January 1,
+2020, regardless of when such regulations were originally promulgated.
+
+SEC. 401. SEVERABILITY.
+
+If any provision of this Act is held invalid, the remainder of this Act
+shall be invalidated.
+
+SEC. 999. EFFECTIVE DATE.
+
+This Act shall take effect on the date of enactment.

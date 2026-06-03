@@ -1,0 +1,27 @@
+# Secrets — any .env file, but keep the example template
+.env
+*.env
+!.env.example
+
+# Runtime state (per-citizen profile + audit log)
+data/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local Claude settings (machine-specific; launch.json IS tracked)
+.claude/settings.local.json
+
+# Build artifacts / prior exports
+*.zip
+*.tar.gz
+
+# Scratch
+_*.py

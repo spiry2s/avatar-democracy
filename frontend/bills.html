@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bills — Avatar Democracy</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="logo">
+      <div class="logo-mark"></div>
+      <span>Avatar Democracy</span>
+    </div>
+    <nav>
+      <a href="/" class="nav-link">Analyze</a>
+      <a href="/avatar" class="nav-link">My Avatar</a>
+      <a href="/vote" class="nav-link">Vote</a>
+      <a href="/bills" class="nav-link active">Bills</a>
+      <a href="/chamber" class="nav-link">Chamber</a>
+      <a href="/history" class="nav-link">History</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="container">
+
+  <!-- LIST VIEW -->
+  <div id="list-view">
+    <section class="hero">
+      <div class="eyebrow">Bills · The legislative lifecycle</div>
+      <h1>Propose, endorse, decide</h1>
+      <p class="lead">A bill is a living object: anyone proposes it, citizens endorse it past a threshold, it freezes for a cooling-off period, then your Avatar votes on it section by section.</p>
+    </section>
+
+    <section class="result-card">
+      <div class="result-card-header"><h3>Propose a bill</h3></div>
+      <div class="result-card-body">
+        <input type="text" id="propose-title" class="title-field full-width" placeholder="Bill title">
+        <div class="propose-row">
+          <select id="propose-scope" class="title-field">
+            <option value="ordinary">Ordinary legislation</option>
+            <option value="major">Major reform</option>
+            <option value="constitutional">Constitutional change</option>
+          </select>
+          <span class="muted" id="scope-hint"></span>
+        </div>
+        <textarea id="propose-text" rows="8" placeholder="Paste or write the bill text..."></textarea>
+        <div class="input-footer-inline">
+          <span class="muted" id="propose-status"></span>
+          <button class="btn-primary" id="propose-btn" disabled>Propose</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="result-card">
+      <div class="result-card-header">
+        <h3>Bills</h3>
+        <button class="btn-secondary" id="refresh-bills">Refresh</button>
+      </div>
+      <div class="result-card-body" id="bills-list">
+        <p class="muted">Loading…</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- DETAIL VIEW -->
+  <div id="detail-view" class="hidden">
+    <button class="btn-link" id="back-btn">← All bills</button>
+    <section class="hero detail-hero">
+      <div class="eyebrow" id="detail-eyebrow"></div>
+      <h1 id="detail-title"></h1>
+    </section>
+    <div id="detail-body"></div>
+  </div>
+
+</div>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <span>Avatar Democracy · Open source · MIT licensed</span>
+    <span class="footer-version">v0.1 alpha</span>
+  </div>
+</footer>
+
+<script src="/static/bills.js"></script>
+</body>
+</html>

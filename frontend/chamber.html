@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chamber — Avatar Democracy</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="logo">
+      <div class="logo-mark"></div>
+      <span>Avatar Democracy</span>
+    </div>
+    <nav>
+      <a href="/" class="nav-link">Analyze</a>
+      <a href="/avatar" class="nav-link">My Avatar</a>
+      <a href="/vote" class="nav-link">Vote</a>
+      <a href="/bills" class="nav-link">Bills</a>
+      <a href="/chamber" class="nav-link active">Chamber</a>
+      <a href="/history" class="nav-link">History</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="container">
+
+  <section class="hero">
+    <div class="eyebrow">Proxy Chamber · Who's registered</div>
+    <h1>The Chamber</h1>
+    <p class="lead">Every eligible citizen has one Avatar; together they are the Proxy Chamber that votes on legislation. This is the makeup of the chamber your votes are aggregated into.</p>
+  </section>
+
+  <!-- Registered count -->
+  <section class="stat-banner" id="stat-banner">
+    <div class="stat-big"><span id="stat-total">—</span></div>
+    <div class="stat-caption" id="stat-caption">registered Avatars</div>
+  </section>
+
+  <!-- Compass scatter -->
+  <section class="result-card">
+    <div class="result-card-header">
+      <h3>Political compass of the chamber</h3>
+      <div class="axis-pickers">
+        <label>X <select id="axis-x" class="title-field mini-select"></select></label>
+        <label>Y <select id="axis-y" class="title-field mini-select"></select></label>
+      </div>
+    </div>
+    <div class="result-card-body">
+      <div id="scatter-wrap"><svg id="scatter" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"></svg></div>
+      <div class="scatter-legend" id="scatter-legend"></div>
+    </div>
+  </section>
+
+  <!-- Archetype breakdown -->
+  <section class="result-card">
+    <div class="result-card-header"><h3>Archetypes</h3></div>
+    <div class="result-card-body" id="archetypes"></div>
+  </section>
+
+  <!-- Per-axis lean -->
+  <section class="result-card">
+    <div class="result-card-header"><h3>Where the chamber leans, on average</h3></div>
+    <div class="result-card-body">
+      <div class="compass-readout" id="axis-means"></div>
+    </div>
+  </section>
+
+  <!-- Regenerate -->
+  <section class="result-card">
+    <div class="result-card-header"><h3>Regenerate population</h3></div>
+    <div class="result-card-body">
+      <p class="muted">Demo control — reshuffle the synthetic population (the real system registers verified citizens). This does not change your own Avatar.</p>
+      <div class="input-footer-inline">
+        <label class="muted">Size <input type="number" id="pop-size" class="title-field sim-input" min="1" max="5000"></label>
+        <span class="muted" id="regen-status"></span>
+        <button class="btn-secondary" id="regen-btn">Regenerate</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <span>Avatar Democracy · Open source · MIT licensed</span>
+    <span class="footer-version">v0.1 alpha</span>
+  </div>
+</footer>
+
+<script src="/static/chamber.js"></script>
+</body>
+</html>

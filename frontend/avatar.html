@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Avatar — Avatar Democracy</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="logo">
+      <div class="logo-mark"></div>
+      <span>Avatar Democracy</span>
+    </div>
+    <nav>
+      <a href="/" class="nav-link">Analyze</a>
+      <a href="/avatar" class="nav-link active">My Avatar</a>
+      <a href="/vote" class="nav-link">Vote</a>
+      <a href="/bills" class="nav-link">Bills</a>
+      <a href="/chamber" class="nav-link">Chamber</a>
+      <a href="/history" class="nav-link">History</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<div class="container">
+
+  <section class="hero">
+    <div class="eyebrow">Configure · Your delegated will</div>
+    <h1>Set up your Avatar</h1>
+    <p class="lead">Your Avatar votes on legislation for you. Tell it what you care about three ways: a quick compass, your own words, and the people you trust on specific issues.</p>
+  </section>
+
+  <!-- Step 1: Questionnaire -->
+  <section class="result-card">
+    <div class="result-card-header">
+      <h3>1 · Political compass</h3>
+      <span class="badge" id="compass-status">Not set</span>
+    </div>
+    <div class="result-card-body">
+      <p class="muted">A fallback signal your Avatar uses only when no delegate or values statement covers a bill. Answer what you can — skip what you don't care about.</p>
+      <div id="questionnaire"></div>
+      <div class="compass-readout hidden" id="compass-readout"></div>
+    </div>
+  </section>
+
+  <!-- Step 2: Values -->
+  <section class="result-card">
+    <div class="result-card-header">
+      <h3>2 · Values, in your own words</h3>
+    </div>
+    <div class="result-card-body">
+      <p class="muted">Free text. What do you prioritize? What are you skeptical of? The more specific, the better your Avatar represents you. e.g. "I prioritize civil liberties and fiscal restraint. Skeptical of new surveillance powers and corporate subsidies. Pro-renewable energy but wary of mandates that hit low-income households."</p>
+      <textarea id="values-input" rows="6" placeholder="Write your values here..."></textarea>
+    </div>
+  </section>
+
+  <!-- Step 3: Delegates -->
+  <section class="result-card">
+    <div class="result-card-header">
+      <h3>3 · Per-issue delegates</h3>
+      <span class="badge" id="delegates-count">0</span>
+    </div>
+    <div class="result-card-body">
+      <p class="muted">On specific issues, follow someone you trust. Your Avatar approximates how they'd vote from their public positions. <strong>Adding</strong> a delegate has a cooling-off period before it takes effect; <strong>revoking</strong> is instant.</p>
+
+      <div class="delegate-form">
+        <input type="text" id="del-issue" placeholder="Issue area (e.g. fiscal, climate)" class="title-field">
+        <input type="text" id="del-name" placeholder="Delegate (e.g. Sen. Rand Paul)" class="title-field">
+        <button class="btn-secondary" id="del-add">Add delegate</button>
+      </div>
+      <input type="text" id="del-note" placeholder="Optional note: scope or why" class="title-field full-width">
+
+      <div id="delegates-list"></div>
+    </div>
+  </section>
+
+  <div class="save-bar">
+    <span class="muted" id="save-status"></span>
+    <button class="btn-primary" id="save-btn">Save compass &amp; values</button>
+  </div>
+
+</div>
+</main>
+
+<footer>
+  <div class="container footer-inner">
+    <span>Avatar Democracy · Open source · MIT licensed</span>
+    <span class="footer-version">v0.1 alpha</span>
+  </div>
+</footer>
+
+<script src="/static/avatar.js"></script>
+</body>
+</html>

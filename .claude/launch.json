@@ -1,0 +1,15 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "avatar-democracy",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["main.py"],
+      "port": 8000,
+      "env": {
+        "BILL_COOLING_OFF_SECONDS": "0",
+        "DELEGATE_COOLING_OFF_SECONDS": "0"
+      }
+    }
+  ]
+}
