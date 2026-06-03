@@ -150,12 +150,14 @@ function renderSection(v, idx) {
   const pos = (v.position || 'abstain').toLowerCase();
   const basisLabel = formatBasis(v.basis);
   const overridden = v._overridden ? '<span class="sig-badge sig-medium">overridden</span>' : '';
+  const diverge = v.divergent ? '<span class="badge-diverge" title="A second model voted differently — treat as low-confidence">⚠ models diverge</span>' : '';
   return `<div class="vote-item vote-${pos}" id="vote-${idx}">
     <div class="vote-header">
       <span class="vote-position pos-${pos}">${escHtml(v.position)}</span>
       <span class="section-id">${escHtml(v.section_id)}</span>
       <span class="section-heading">${escHtml(v.heading)}</span>
       ${overridden}
+      ${diverge}
     </div>
     <p class="vote-reasoning">${escHtml(v.reasoning)}</p>
     <div class="vote-footer">

@@ -19,13 +19,14 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from dataclasses import dataclass, asdict
 from typing import Any
 
 from anthropic import Anthropic
 
 from backend import questionnaire
-from backend.config import MODEL
+from backend.config import MODEL, CHECKER_MODEL, MULTI_MODEL_CHECK
 from backend.profile import CitizenProfile
 
 
@@ -37,6 +38,7 @@ class SectionVote:
     basis: str               # what drove it: "delegate:<name>" | "values" | "compass"
     reasoning: str
     confidence: str          # "high" | "medium" | "low"
+    divergent: bool = False  # a second model disagreed on this section (capture defense)
 
 
 @dataclass
@@ -266,6 +268,20 @@ def cast_vote(
         for v in data.get("section_votes", [])
     ]
 
+    # Capture defense: cross-check with a second model. Best-effort — a checker
+    # failure must never break the primary vote.
+    if MULTI_MODEL_CHECK and section_votes:
+        try:
+            checker = cross_check(analysis, profile, client)
+            primary = {sv.section_id: sv.position for sv in section_votes}
+            diverged = find_divergences(primary, checker)
+            for sv in section_votes:
+                if sv.section_id in diverged:
+                    sv.divergent = True
+                    sv.confidence = "low"
+        except Exception:
+            pass
+
     return AvatarVote(
         bill_title=analysis.get("title", "Untitled bill"),
         section_votes=section_votes,
@@ -273,3 +289,89 @@ def cast_vote(
         would_pass_sections=data.get("would_pass_sections", []),
         key_tension=data.get("key_tension", ""),
     )
+
+
+CHECK_INSTRUCTIONS = """
+You are an INDEPENDENT second opinion double-checking how this citizen would vote.
+Apply the same rules in the same priority order: delegate -> values -> compass ->
+abstain. Do not be swayed by the bill's framing.
+
+Output ONLY a JSON object mapping each section_id to a position:
+{"<section_id>": "yes" | "no" | "abstain", ...}
+No prose, no markdown fences.
+"""
+
+
+def cross_check(
+    analysis: dict[str, Any],
+    profile: CitizenProfile,
+    client: Anthropic | None = None,
+) -> dict[str, str]:
+    """Run a second, independent model over the same vote and return its per-section
+    positions {section_id: position}. Used to flag divergence; never authoritative."""
+    if client is None:
+        client = get_client()
+
+    prompt = (
+        _build_config_block(profile)
+        + "\n\n---\n\n"
+        + _build_bill_block(analysis)
+        + "\n\n---\n"
+        + CHECK_INSTRUCTIONS
+    )
+    message = client.messages.create(
+        model=CHECKER_MODEL,
+        max_tokens=2000,
+        system=SYSTEM_PROMPT,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    text = "".join(b.text for b in message.content if hasattr(b, "text")).strip()
+    if text.startswith("```"):
+        lines = text.split("\n")
+        end = len(lines) - 1 if lines[-1].strip() == "```" else len(lines)
+        text = "\n".join(lines[1:end])
+
+    data = json.loads(text)
+    # The checker often embellishes (returns full vote objects, varied id formats).
+    # Coerce each entry to a clean position and a canonical key; non-position
+    # entries (recommendation/tension) coerce to "" and are dropped.
+    out: dict[str, str] = {}
+    for k, v in data.items():
+        pos = _coerce_position(v)
+        if pos:
+            out[_norm_key(str(k))] = pos
+    return out
+
+
+_POS_RE = re.compile(r"position['\"]?\s*[:=]\s*['\"]?(yes|no|abstain)", re.IGNORECASE)
+
+
+def _coerce_position(value: Any) -> str:
+    """Extract a yes/no/abstain position from a checker value that may be a clean
+    string, a nested object, or a stringified vote object."""
+    if isinstance(value, dict):
+        value = value.get("position", "")
+    s = str(value).strip().lower()
+    if s in ("yes", "no", "abstain"):
+        return s
+    m = _POS_RE.search(s)
+    return m.group(1).lower() if m else ""
+
+
+def _norm_key(section_id: str) -> str:
+    """Canonicalize a section id for matching across models:
+    'Sec. 101', 'sec_101', 'Section 101' -> 'sec101'."""
+    return re.sub(r"[^a-z0-9]", "", section_id.lower())
+
+
+def find_divergences(primary: dict[str, str], checker: dict[str, str]) -> set[str]:
+    """Section ids (original primary keys) where the checker expressed a position
+    that differs from the primary vote. Keys are normalized so differing id
+    formats still match; sections the checker omitted are not flagged."""
+    norm_checker = {_norm_key(k): v for k, v in checker.items()}
+    diverged = set()
+    for section_id, position in primary.items():
+        other = norm_checker.get(_norm_key(section_id))
+        if other is not None and other != str(position).strip().lower():
+            diverged.add(section_id)
+    return diverged

@@ -281,6 +281,7 @@ function resultPanel(b) {
       </div>
       ${chamberBar(t)}
       ${noContest ? '' : blocBreakdown(t.by_archetype)}
+      ${sv.divergent ? `<div class="diverge-line"><span class="badge-diverge">⚠ models diverge</span> a second model voted differently — treat as low-confidence</div>` : ''}
       ${sv.reasoning ? `<p class="vote-reasoning"><span class="op-tag pos-${pos}">your Avatar: ${escHtml(sv.position)}</span>${escHtml(sv.reasoning)}</p>` : ''}
       ${sv.basis ? `<div class="vote-footer"><span class="vote-basis">${formatBasis(sv.basis)}</span></div>` : ''}
     </div>`;

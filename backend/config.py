@@ -62,3 +62,9 @@ POPULATION_SIZE = _int_env("POPULATION_SIZE", 200)
 
 # Deadzone for the deterministic compass vote: |alignment| below this abstains.
 CHAMBER_VOTE_TAU = _float_env("CHAMBER_VOTE_TAU", 0.12)
+
+# Capture defense (white paper decisions 25, 28): cross-check the operator's vote
+# with a second, independent model and flag sections where the two disagree, so no
+# single model silently decides. Cheap model keeps the overhead small.
+CHECKER_MODEL = os.environ.get("CHECKER_MODEL", "claude-haiku-4-5")
+MULTI_MODEL_CHECK = os.environ.get("MULTI_MODEL_CHECK", "1") not in ("0", "false", "False", "")
