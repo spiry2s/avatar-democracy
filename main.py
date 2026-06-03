@@ -72,8 +72,14 @@ def _serve(filename: str) -> FileResponse:
 
 @app.get("/")
 async def root() -> FileResponse:
-    """Serve the bill analyzer UI."""
+    """Serve the landing page."""
     return _serve("index.html")
+
+
+@app.get("/analyze")
+async def analyze_page() -> FileResponse:
+    """Serve the bill analyzer UI."""
+    return _serve("analyze.html")
 
 
 @app.get("/avatar")

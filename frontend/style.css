@@ -906,6 +906,39 @@ select.title-field { cursor: pointer; }
   border: 1px solid rgba(255, 95, 95, 0.4);
 }
 
+/* ── Landing page ── */
+
+a.logo { text-decoration: none; }
+a.logo:hover { opacity: 0.85; text-decoration: none; }
+
+.home-hero { margin-bottom: 36px; }
+
+.home-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.home-card {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  color: var(--text);
+  transition: border-color 0.15s, transform 0.15s, background 0.15s;
+}
+.home-card:hover {
+  border-color: var(--accent);
+  background: var(--surface-2);
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+.home-card-icon { font-size: 1.8rem; margin-bottom: 10px; line-height: 1; }
+.home-card h3 { font-size: 1.05rem; margin-bottom: 6px; }
+.home-card p { font-size: 0.875rem; color: var(--text-muted); line-height: 1.55; }
+
 /* ── Chamber dashboard ── */
 
 .stat-banner {
