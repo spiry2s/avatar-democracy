@@ -26,7 +26,7 @@ from typing import Any
 from anthropic import Anthropic
 
 from backend import questionnaire
-from backend.config import MODEL, CHECKER_MODEL, MULTI_MODEL_CHECK
+from backend.config import MODEL, CHECKER_MODEL, MULTI_MODEL_CHECK, DELEGATE_DRIFT_CHECK
 from backend.profile import CitizenProfile
 
 
@@ -39,6 +39,7 @@ class SectionVote:
     reasoning: str
     confidence: str          # "high" | "medium" | "low"
     divergent: bool = False  # a second model disagreed on this section (capture defense)
+    delegate_drift: bool = False  # delegate-followed vote contradicts the delegate's recorded positions
 
 
 @dataclass
@@ -282,6 +283,21 @@ def cast_vote(
         except Exception:
             pass
 
+    # Capture defense: does a vote attributed to a grounded delegate actually match
+    # that delegate's own recorded positions? Best-effort.
+    if DELEGATE_DRIFT_CHECK and section_votes:
+        try:
+            section_dicts = [
+                {"section_id": sv.section_id, "basis": sv.basis, "position": sv.position}
+                for sv in section_votes
+            ]
+            drifted = detect_drift(profile, analysis, section_dicts, client)
+            for sv in section_votes:
+                if sv.section_id in drifted:
+                    sv.delegate_drift = True
+        except Exception:
+            pass
+
     return AvatarVote(
         bill_title=analysis.get("title", "Untitled bill"),
         section_votes=section_votes,
@@ -359,9 +375,11 @@ def _coerce_position(value: Any) -> str:
 
 
 def _norm_key(section_id: str) -> str:
-    """Canonicalize a section id for matching across models:
-    'Sec. 101', 'sec_101', 'Section 101' -> 'sec101'."""
-    return re.sub(r"[^a-z0-9]", "", section_id.lower())
+    """Canonicalize a section id to its distinctive part so differing model
+    formats still match: 'Sec. 101', 'sec_101', 'Section 101', '101' -> '101'."""
+    s = re.sub(r"[^a-z0-9]+", " ", str(section_id).lower())
+    s = re.sub(r"\b(?:section|sec)\b", " ", s)
+    return re.sub(r"\s+", "", s)
 
 
 def find_divergences(primary: dict[str, str], checker: dict[str, str]) -> set[str]:
@@ -375,3 +393,79 @@ def find_divergences(primary: dict[str, str], checker: dict[str, str]) -> set[st
         if other is not None and other != str(position).strip().lower():
             diverged.add(section_id)
     return diverged
+
+
+def _delegate_followed_sections(
+    profile: CitizenProfile, section_votes: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    """Sections whose vote was driven by a GROUNDED delegate (basis 'delegate:<name>'
+    where that active delegate has recorded positions). Pure — no API."""
+    grounded = {
+        d.name.strip().lower(): d.sources
+        for d in profile.active_delegates()
+        if d.sources
+    }
+    out = []
+    for sv in section_votes:
+        basis = sv.get("basis") or ""
+        if basis.startswith("delegate:"):
+            name = basis[len("delegate:"):].strip()
+            if name.lower() in grounded:
+                out.append({
+                    "section_id": sv.get("section_id"),
+                    "delegate": name,
+                    "sources": grounded[name.lower()],
+                    "position": sv.get("position", "abstain"),
+                })
+    return out
+
+
+def detect_drift(
+    profile: CitizenProfile,
+    analysis: dict[str, Any],
+    section_votes: list[dict[str, Any]],
+    client: Anthropic | None = None,
+) -> set[str]:
+    """Section ids where the delegate-attributed vote contradicts the delegate's OWN
+    recorded positions. Independently derives how each grounded delegate would vote
+    from their sources, then compares to what was cast. Returns flagged section ids."""
+    targets = _delegate_followed_sections(profile, section_votes)
+    if not targets:
+        return set()
+    if client is None:
+        client = get_client()
+
+    summaries = {str(s.get("section_id")): s.get("summary", "") for s in analysis.get("sections", [])}
+    lines = [
+        "For each item, decide ONLY how the named delegate would vote on that section",
+        "based strictly on their recorded positions below — not your own opinion.",
+        'Output ONLY JSON mapping section_id to a position: {"<section_id>": "yes|no|abstain"}.',
+        "",
+    ]
+    for t in targets:
+        lines.append(f"[{t['section_id']}] delegate: {t['delegate']}")
+        lines.append(f"  section: {summaries.get(str(t['section_id']), '')}")
+        for s in t["sources"]:
+            lines.append(f"  recorded position [{s.get('title', '')}]: {s.get('text', '')}")
+        lines.append("")
+
+    message = client.messages.create(
+        model=CHECKER_MODEL,
+        max_tokens=1000,
+        messages=[{"role": "user", "content": "\n".join(lines)}],
+    )
+    text = "".join(b.text for b in message.content if hasattr(b, "text")).strip()
+    if text.startswith("```"):
+        rows = text.split("\n")
+        end = len(rows) - 1 if rows[-1].strip() == "```" else len(rows)
+        text = "\n".join(rows[1:end])
+
+    data = json.loads(text)
+    expected = {}
+    for k, v in data.items():
+        pos = _coerce_position(v)
+        if pos:
+            expected[_norm_key(str(k))] = pos
+
+    cast = {t["section_id"]: t["position"] for t in targets}
+    return find_divergences(cast, expected)

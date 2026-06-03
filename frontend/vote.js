@@ -151,6 +151,7 @@ function renderSection(v, idx) {
   const basisLabel = formatBasis(v.basis);
   const overridden = v._overridden ? '<span class="sig-badge sig-medium">overridden</span>' : '';
   const diverge = v.divergent ? '<span class="badge-diverge" title="A second model voted differently — treat as low-confidence">⚠ models diverge</span>' : '';
+  const drift = v.delegate_drift ? '<span class="badge-drift" title="This vote contradicts the delegate\'s recorded positions — review before trusting it">⚠ delegate drift</span>' : '';
   return `<div class="vote-item vote-${pos}" id="vote-${idx}">
     <div class="vote-header">
       <span class="vote-position pos-${pos}">${escHtml(v.position)}</span>
@@ -158,6 +159,7 @@ function renderSection(v, idx) {
       <span class="section-heading">${escHtml(v.heading)}</span>
       ${overridden}
       ${diverge}
+      ${drift}
     </div>
     <p class="vote-reasoning">${escHtml(v.reasoning)}</p>
     <div class="vote-footer">

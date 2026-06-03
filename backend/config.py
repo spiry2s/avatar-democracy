@@ -68,3 +68,8 @@ CHAMBER_VOTE_TAU = _float_env("CHAMBER_VOTE_TAU", 0.12)
 # single model silently decides. Cheap model keeps the overhead small.
 CHECKER_MODEL = os.environ.get("CHECKER_MODEL", "claude-haiku-4-5")
 MULTI_MODEL_CHECK = os.environ.get("MULTI_MODEL_CHECK", "1") not in ("0", "false", "False", "")
+
+# Capture defense (white paper decision 30): flag when a delegate-followed vote is
+# inconsistent with that delegate's OWN recorded positions — a sign the delegate has
+# drifted, been captured, or been impersonated. Only runs for grounded delegates.
+DELEGATE_DRIFT_CHECK = os.environ.get("DELEGATE_DRIFT_CHECK", "1") not in ("0", "false", "False", "")

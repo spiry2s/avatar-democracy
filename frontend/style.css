@@ -893,6 +893,19 @@ select.title-field { cursor: pointer; }
 }
 .diverge-line { font-size: 0.82rem; color: var(--text-muted); margin: 6px 0; display: flex; align-items: center; gap: 8px; }
 
+/* Delegate drift — more serious (possible capture/impersonation) */
+.badge-drift {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: rgba(255, 95, 95, 0.16);
+  color: var(--red);
+  border: 1px solid rgba(255, 95, 95, 0.4);
+}
+
 /* ── Chamber dashboard ── */
 
 .stat-banner {

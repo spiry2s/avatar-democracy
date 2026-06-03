@@ -39,7 +39,8 @@ def test_coerce_position_shapes():
 
 
 def test_norm_key_unifies_formats():
-    assert _norm_key("Sec. 101") == _norm_key("sec_101") == _norm_key("SEC.101") == "sec101"
+    # bare number, 'Sec.', 'Section', underscores all collapse to the distinctive id
+    assert _norm_key("Sec. 101") == _norm_key("sec_101") == _norm_key("Section 101") == _norm_key("101") == "101"
 
 
 def test_find_divergences_tolerates_key_format_mismatch():

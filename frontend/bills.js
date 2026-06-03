@@ -282,6 +282,7 @@ function resultPanel(b) {
       ${chamberBar(t)}
       ${noContest ? '' : blocBreakdown(t.by_archetype)}
       ${sv.divergent ? `<div class="diverge-line"><span class="badge-diverge">⚠ models diverge</span> a second model voted differently — treat as low-confidence</div>` : ''}
+      ${sv.delegate_drift ? `<div class="diverge-line"><span class="badge-drift">⚠ delegate drift</span> this vote contradicts the delegate's recorded positions — review before trusting it</div>` : ''}
       ${sv.reasoning ? `<p class="vote-reasoning"><span class="op-tag pos-${pos}">your Avatar: ${escHtml(sv.position)}</span>${escHtml(sv.reasoning)}</p>` : ''}
       ${sv.basis ? `<div class="vote-footer"><span class="vote-basis">${formatBasis(sv.basis)}</span></div>` : ''}
     </div>`;
